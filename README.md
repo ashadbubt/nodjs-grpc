@@ -1,3 +1,3 @@
-# nodjs-grpc
+# nodejs-grpc
 
-Basic exmple of grpc nodjs
+Basic exmple of grpc nodejs
