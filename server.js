@@ -1,6 +1,6 @@
 const grpc = require("@grpc/grpc-js");
 const protoLoder = require("@grpc/proto-loader");
-const PROTO_PATH = "./password.proto";
+const PROTO_PATH = ["./proto/password.proto", "./proto/customers.proto"];
 
 const loaderOptions = {
   keepCase: true,
@@ -33,12 +33,22 @@ let dummyRecords = {
   ],
 };
 
+let customerRecords = {
+  customers: [
+    {
+      id: "153642",
+      name: "ashad",
+      age: 9,
+      address: "feni",
+    },
+  ],
+};
+
 ourServer.addService(grpcObj.PasswordService.service, {
   /*our protobuf message(passwordMessage) for the RetrievePasswords was Empty. */
   retrivePasswords: (passwordMessage, callback) => {
     callback(null, dummyRecords);
   },
-
   addNewDetails: (passwordMessage, callback) => {
     const passwordDetails = { ...passwordMessage.request };
     dummyRecords.passwords.push(passwordDetails);
@@ -54,6 +64,13 @@ ourServer.addService(grpcObj.PasswordService.service, {
     targetDetails.hashValue = passwordMessage.request.hashValue;
     targetDetails.saltValue = passwordMessage.request.saltValue;
     callback(null, targetDetails);
+  },
+});
+
+ourServer.addService(grpcObj.CustomerService.service, {
+  getAll: (_, callback) => {
+    console.log("ass");
+    callback(null, customerRecords);
   },
 });
 

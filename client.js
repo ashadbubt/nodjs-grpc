@@ -1,6 +1,6 @@
 const grpc = require("@grpc/grpc-js");
 var protoLoader = require("@grpc/proto-loader");
-const PROTO_PATH = "./password.proto";
+const PROTO_PATH = ["./proto/password.proto", "./proto/customers.proto"];
 const bcrypt = require("bcrypt");
 const options = {
   keepCase: true,
@@ -24,46 +24,60 @@ clientStub.retrivePasswords({}, (error, passwords) => {
   console.log(passwords);
 });
 
-const saltRounds = 10;
-let passwordToken = "5TgU76W&eRee!";
-let updatePasswordToken = "H7hG%$Yh33";
+const CustomerService = grpc.loadPackageDefinition(grpcObj).CustomerService;
 
-bcrypt.genSalt(saltRounds, function (error, salt) {
-  bcrypt.hash(passwordToken, salt, function (error, hash) {
-    clientStub.addNewDetails(
-      {
-        id: Date.now(),
-        password: passwordToken,
-        hashValue: hash,
-        saltValue: salt,
-      },
-      (error, passwordDetails) => {
-        //implement your error logic here
-        console.log(passwordDetails);
-      }
-    );
-  });
-});
+const customerStub = new CustomerService(
+  "localhost:50051",
+  grpc.credentials.createInsecure()
+);
 
-bcrypt.genSalt(saltRounds, function (error, salt) {
+customerStub.getAll({}, (error, data) => {
   //implement your error logic here
-  bcrypt.hash(updatePasswordToken, salt, function (error, hash) {
-    //implement your error logic here
-    clientStub.updatePasswordDetails(
-      {
-        /*
-                This is one of the defaultIDs of our dummy object's values.
-                You can change it to suit your needs
-                */
-        id: 153642,
-        password: updatePasswordToken,
-        hashValue: hash,
-        saltValue: salt,
-      },
-      (error, passwordDetails) => {
-        //implement your error logic here
-        console.log(passwordDetails);
-      }
-    );
-  });
+  console.log(data);
 });
+
+// const saltRounds = 10;
+// let passwordToken = "5TgU76W&eRee!";
+// let updatePasswordToken = "H7hG%$Yh33";
+
+// clientStub.addNewDetails(
+//   {
+//     id: Date.now(),
+//     password: passwordToken,
+//     hashValue: "hash",
+//     saltValue: "salt",
+//   },
+//   (error, passwordDetails) => {
+//     //implement your error logic here
+//     console.log(passwordDetails);
+//   }
+// );
+
+// bcrypt.genSalt(saltRounds, function (error, salt) {
+//   bcrypt.hash(passwordToken, salt, function (error, hash) {
+
+//   });
+// });
+
+// bcrypt.genSalt(saltRounds, function (error, salt) {
+//   //implement your error logic here
+//   bcrypt.hash(updatePasswordToken, salt, function (error, hash) {
+//     //implement your error logic here
+//     clientStub.updatePasswordDetails(
+//       {
+//         /*
+//                 This is one of the defaultIDs of our dummy object's values.
+//                 You can change it to suit your needs
+//                 */
+//         id: 153642,
+//         password: updatePasswordToken,
+//         hashValue: hash,
+//         saltValue: salt,
+//       },
+//       (error, passwordDetails) => {
+//         //implement your error logic here
+//         console.log(passwordDetails);
+//       }
+//     );
+//   });
+// });
